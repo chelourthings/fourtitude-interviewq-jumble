@@ -9,7 +9,7 @@ import asia.fourtitude.interviewq.jumble.core.JumbleEngine;
 public class AppConfig {
 
     @Bean
-    public JumbleEngine jumbleEngine() {
+    public JumbleEngine jumbleEngine() throws Exception {
         return new JumbleEngine();
     }
 

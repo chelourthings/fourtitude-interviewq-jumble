@@ -1,5 +1,6 @@
 package asia.fourtitude.interviewq.jumble.console;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Scanner;
@@ -10,19 +11,19 @@ public class ConsoleApp extends AConsole {
 
     private final JumbleEngine engine;
 
-    public ConsoleApp(Scanner cin, PrintStream cout) {
+    public ConsoleApp(Scanner cin, PrintStream cout) throws IOException {
         super(cin, cout);
         this.engine = new JumbleEngine();
     }
 
-    private void scramble() {
+    private void scramble() throws IOException {
         cout.println();
         cout.println("Scramble Word");
         cout.println("-------------");
         cout.print("Enter word: ");
         String word = cin.nextLine().trim();
 
-        if (! word.isEmpty()) {
+        if (!word.isEmpty()) {
             String drow = engine.scramble(word);
             cout.print("Scrambled : ");
             cout.println(drow);
@@ -88,7 +89,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    private void searchWords() {
+    private void searchWords() throws IOException {
         Character startChar = null;
         Character endChar = null;
         Integer length = null;
@@ -175,7 +176,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    public void run() {
+    public void run() throws IOException {
         boolean exit = false;
         boolean finish = false;
         do {
@@ -231,7 +232,7 @@ public class ConsoleApp extends AConsole {
         } while (! finish && ! exit);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new ConsoleApp(new Scanner(System.in), new PrintStream(System.out)).run();
     }
 
