@@ -1,5 +1,6 @@
 package asia.fourtitude.interviewq.jumble.controller;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class RootController {
     }
 
     @GetMapping("palindrome")
-    public String doGetPalindrome(Model model) {
+    public String doGetPalindrome(Model model) throws IOException {
         model.addAttribute("words", this.jumbleEngine.retrievePalindromeWords());
         return "palindrome";
     }

@@ -16,7 +16,7 @@ public class ConsoleApp extends AConsole {
         this.engine = new JumbleEngine();
     }
 
-    private void scramble() throws IOException {
+    private void scramble() {
         cout.println();
         cout.println("Scramble Word");
         cout.println("-------------");
@@ -33,7 +33,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    private void palindrome() {
+    private void palindrome() throws IOException {
         cout.println();
         cout.println("Palindrome Words");
         cout.println("----------------");
@@ -51,7 +51,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    private void wordExists() {
+    private void wordExists() throws IOException {
         cout.println();
         cout.println("Word Exists");
         cout.println("-----------");
@@ -139,7 +139,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    private void generateSubWords() {
+    private void generateSubWords() throws IOException {
         cout.println();
         cout.println("Generate Sub Words");
         cout.println("------------------");
@@ -176,7 +176,7 @@ public class ConsoleApp extends AConsole {
         }
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         boolean exit = false;
         boolean finish = false;
         do {
@@ -232,7 +232,7 @@ public class ConsoleApp extends AConsole {
         } while (! finish && ! exit);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         new ConsoleApp(new Scanner(System.in), new PrintStream(System.out)).run();
     }
 

@@ -74,7 +74,7 @@ public class GameApiController {
                                                             "  \"guessed_words\": []\n" +
                                                             "}") })) })
     @GetMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GameGuessOutput> newGame() {
+    public ResponseEntity<GameGuessOutput> newGame() throws Exception {
         /*
          * Refer to the method's Javadoc (above) and implement accordingly.
          * Must pass the corresponding unit tests.

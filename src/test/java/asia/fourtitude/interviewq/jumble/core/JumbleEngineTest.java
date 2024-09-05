@@ -2,6 +2,7 @@ package asia.fourtitude.interviewq.jumble.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
@@ -33,12 +34,12 @@ class JumbleEngineTest {
     }
 
     @Test
-    void palindrome() {
+    void palindrome() throws IOException {
         assertEquals(61, engine.retrievePalindromeWords().size(), "retrievePalindromeWords.size()");
     }
 
     @Test
-    void randomWord() {
+    void randomWord() throws IOException {
         assertNotNull(engine.pickOneRandomWord(null), "length=null");
         assertEquals(3, engine.pickOneRandomWord(3).length(), "length=3");
         assertEquals(4, engine.pickOneRandomWord(4).length(), "length=4");
@@ -50,7 +51,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenEmptyInvalidWord_thenExpectNotExists() {
+    void givenEmptyInvalidWord_thenExpectNotExists() throws IOException {
         assertFalse(engine.exists(null), "word=null");
         assertFalse(engine.exists(""), "word=<EMPTY>");
         assertFalse(engine.exists(" "), "word=<BLANK>");
@@ -59,7 +60,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenValidWord_thenExpectExists() {
+    void givenValidWord_thenExpectExists() throws IOException {
         assertTrue(engine.exists("Panda"), "word=Panda");
         assertTrue(engine.exists("kangaroo"), "word=kangaroo");
         assertTrue(engine.exists("MaNGoS"), "word=MaNGoS");
@@ -93,28 +94,28 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenAllEmptyAndOrInvalidInputs_thenEmptyList() {
+    void givenAllEmptyAndOrInvalidInputs_thenEmptyList() throws IOException {
         assertEquals(0, engine.searchWords(null, null, null).size(), "start=null;end=null;length=null");
         assertEquals(0, engine.searchWords(' ', '$', 0).size(), "start=<SPACE>;end=<PUNCT>;length=0");
         assertEquals(0, engine.searchWords('\t', '7', -123).size(), "start=<CONTROL>;end=<NUMBER>;length=<NEGATIVE>");
     }
 
     @Test
-    void givenValidStartCharOnly_thenSomeWords() {
+    void givenValidStartCharOnly_thenSomeWords() throws IOException {
         // uppercase, lowercase
         assertEquals(3478, engine.searchWords('a', null, null).size(), "start=a;end=null;length=null");
         assertEquals(3911, engine.searchWords('B', null, null).size(), "start=B;end=null;length=null");
     }
 
     @Test
-    void givenValidEndCharOnly_thenSomeWords() {
+    void givenValidEndCharOnly_thenSomeWords() throws IOException {
         // uppercase, lowercase
         assertEquals(677, engine.searchWords(null, 'c', null).size(), "start=null;end=c;length=null");
         assertEquals(7654, engine.searchWords(null, 'D', null).size(), "start=null;end=D;length=null");
     }
 
     @Test
-    void givenValidLengthOnly_thenSomeWords() {
+    void givenValidLengthOnly_thenSomeWords() throws IOException {
         // length less than MAX
         assertEquals(4, engine.searchWords(null, null, 1).size(), "start=null;end=null;length=1");
         assertEquals(61, engine.searchWords(null, null, 2).size(), "start=null;end=null;length=2");
@@ -141,7 +142,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenValidStartCharAndValidEndCharAndValidLength_thenSomeWords() {
+    void givenValidStartCharAndValidEndCharAndValidLength_thenSomeWords() throws IOException {
         assertEquals(307, engine.searchWords('F', 'G', null).size(), "start=F;end=G;length=null");
         assertEquals(377, engine.searchWords('h', null, 7).size(), "start=h;end=null;length=7");
         assertEquals(30, engine.searchWords(null, 'i', 8).size(), "start=null;end=i;length=8");
@@ -152,7 +153,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenValidStartCharAndValidEndCharAndValidLength_thenEmptyList() {
+    void givenValidStartCharAndValidEndCharAndValidLength_thenEmptyList() throws IOException {
         // length too large
         // wrong combo of startChar and endChar
         assertEquals(0, engine.searchWords('m', 'n', 19).size(), "start=m;end=n;length=19");
@@ -160,7 +161,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void whenInvalidWord_thenEmptyList() {
+    void whenInvalidWord_thenEmptyList() throws IOException {
         assertEquals(0, engine.generateSubWords(null, null).size(), "word=null;len=null");
         assertEquals(0, engine.generateSubWords("", null).size(), "word=<EMPTY>;len=null");
         assertEquals(0, engine.generateSubWords(" ", null).size(), "word=<BLANK>;len=null");
@@ -170,7 +171,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void whenValidWord_thenSomeWord() {
+    void whenValidWord_thenSomeWord() throws IOException {
         assertEquals(16, engine.generateSubWords("fusion", null).size(), "word=fusion;len=null");
         assertEquals(0, engine.generateSubWords("fusion", 0).size(), "word=fusion;len=0");
         assertEquals(27, engine.generateSubWords("fusion", 1).size(), "word=fusion;len=1");
@@ -181,7 +182,7 @@ class JumbleEngineTest {
     }
 
     @Test
-    void givenValidInput_whenCreateGameState_thenExpectSuccess() {
+    void givenValidInput_whenCreateGameState_thenExpectSuccess() throws Exception {
         assertNotNull(engine.createGameState(3, null), "length=3;minLength=null");
         assertNotNull(engine.createGameState(4, null), "length=4;minLength=null");
         assertNotNull(engine.createGameState(4, 3), "length=4;minLength=3");

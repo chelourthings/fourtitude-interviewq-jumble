@@ -64,7 +64,7 @@ public class GameWebController {
     }
 
     @GetMapping("/new")
-    public String doGetNew(@ModelAttribute(name = "board") GameBoard board) {
+    public String doGetNew(@ModelAttribute(name = "board") GameBoard board) throws Exception {
         GameState state = this.jumbleEngine.createGameState(6, 3);
 
         /*

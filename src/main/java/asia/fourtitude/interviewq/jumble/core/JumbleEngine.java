@@ -1,12 +1,14 @@
 package asia.fourtitude.interviewq.jumble.core;
 
 import asia.fourtitude.interviewq.jumble.service.WordService;
-//import org.apache.logging.log4j.util.Strings;
+import lombok.AllArgsConstructor;
+import org.codehaus.groovy.tools.shell.IO;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class JumbleEngine {
     private WordService wordservice;
     public JumbleEngine() throws IOException{
@@ -55,7 +57,7 @@ public class JumbleEngine {
      *
      * @return  The list of palindrome words found in system/engine.
      */
-    public Collection<String> retrievePalindromeWords() {
+    public Collection<String> retrievePalindromeWords() throws IOException {
         List<String> palindromeWords = new ArrayList<>();
         for (String word : wordservice.getWordList()){
             if (word.length()>1 && isPalindrome(word)){
@@ -86,7 +88,7 @@ public class JumbleEngine {
         return list.get(new Random().nextInt(list.size()));
     }
 
-    public String pickOneRandomWord(Integer length) {
+    public String pickOneRandomWord(Integer length) throws IOException {
         if(length==null){
             return getRandomWords(wordservice.getWordList());
         }
@@ -110,7 +112,7 @@ public class JumbleEngine {
      * @param word  The input word to check.
      * @return  true if `word` exists in internal word list.
      */
-    public boolean exists(String word) {
+    public boolean exists(String word) throws IOException{
 
         if (word == null || word.isEmpty()){
             return false;
@@ -243,7 +245,7 @@ public class JumbleEngine {
             generateSubWordsHelper(newRemaining, minLength, current + remaining.charAt(i), result);
         }
     }
-    public Collection<String> generateSubWords(String word, Integer minLength) {
+    public Collection<String> generateSubWords(String word, Integer minLength) throws IOException {
 
         Set<String> subWords = new HashSet<>();
         if (word == null || (minLength != null && minLength <= 0)) {
@@ -273,7 +275,7 @@ public class JumbleEngine {
      *                   Default is 3.
      * @return  The game state.
      */
-    public GameState createGameState(Integer length, Integer minLength) {
+    public GameState createGameState(Integer length, Integer minLength) throws Exception{
         Objects.requireNonNull(length, "length must not be null");
         if (minLength == null) {
             minLength = 3;

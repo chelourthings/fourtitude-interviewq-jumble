@@ -82,7 +82,7 @@ public class GuessWord extends AConsole {
         return exit;
     }
 
-    public boolean exec() {
+    public boolean exec() throws Exception {
         boolean exit = false;
         boolean finish = false;
         do {

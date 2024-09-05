@@ -5,11 +5,13 @@ import org.springframework.context.annotation.Bean;
 
 import asia.fourtitude.interviewq.jumble.core.JumbleEngine;
 
+import java.io.IOException;
+
 @TestConfiguration
 public class TestConfig {
 
     @Bean
-    public JumbleEngine jumbleEngine() {
+    public JumbleEngine jumbleEngine() throws IOException {
         return new JumbleEngine();
     }
 
