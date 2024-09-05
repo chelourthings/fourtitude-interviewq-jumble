@@ -1,10 +1,17 @@
 package asia.fourtitude.interviewq.jumble.core;
 
+import asia.fourtitude.interviewq.jumble.service.WordService;
+//import org.apache.logging.log4j.util.Strings;
+
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JumbleEngine {
-
+    private WordService wordservice;
+    public JumbleEngine() throws IOException{
+        this.wordservice = new WordService();
+    }
     /**
      * From the input `word`, produces/generates a copy which has the same
      * letters, but in different ordering.
@@ -19,11 +26,17 @@ public class JumbleEngine {
      * @return  The scrambled output/letters.
      */
     public String scramble(String word) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+        char[] characters = word.toCharArray();
+
+        //shuffle the array
+        for (int i = characters.length -1; i>0; i--){
+            int j = (int) (Math.random() * (i+1));
+
+            char temp = characters[i];
+            characters[i]=characters[j];
+            characters[j] = temp;
+        }
+        return new String(characters);
     }
 
     /**
@@ -41,14 +54,20 @@ public class JumbleEngine {
      * d) pass unit test: JumbleEngineTest#palindrome()
      *
      * @return  The list of palindrome words found in system/engine.
-     * @see https://www.google.com/search?q=palindrome+meaning
      */
     public Collection<String> retrievePalindromeWords() {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+        List<String> palindromeWords = new ArrayList<>();
+        for (String word : wordservice.getWordList()){
+            if (word.length()>1 && isPalindrome(word)){
+                palindromeWords.add(word);
+            }
+        }
+        return palindromeWords;
+    }
+
+    static boolean isPalindrome(String word){
+        String reversed = new StringBuilder(word).reverse().toString();
+        return word.equals(reversed);
     }
 
     /**
@@ -63,12 +82,20 @@ public class JumbleEngine {
      * @return  One of the word (randomly) from word list.
      *          Or null if none matching.
      */
+    static String getRandomWords(List<String> list){
+        return list.get(new Random().nextInt(list.size()));
+    }
+
     public String pickOneRandomWord(Integer length) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+        if(length==null){
+            return getRandomWords(wordservice.getWordList());
+        }
+        List<String> matchingWords = wordservice.getWordMap().entrySet().stream()
+                .filter(entry -> entry.getValue().equals(length))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+
+        return matchingWords.isEmpty()? null : getRandomWords(matchingWords);
+
     }
 
     /**
@@ -84,35 +111,47 @@ public class JumbleEngine {
      * @return  true if `word` exists in internal word list.
      */
     public boolean exists(String word) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+
+        if (word == null || word.isEmpty()){
+            return false;
+        }
+        return wordservice.getWordSet().contains(word.trim().toLowerCase());
     }
 
     /**
      * Finds all the words from internal word list which begins with the
      * input `prefix`.
      * Matching is case insensitive.
-     *
+     * <p>
      * Invalid `prefix` (null, empty string, blank string, non letter) will
      * return empty list.
-     *
+     * <p>
      * Evaluation/Grading:
      * a) pass related unit tests in "JumbleEngineTest"
      * b) provide a good enough implementation, if not able to provide a fast lookup
      * c) bonus points, if able to implement a fast lookup/scheme
      *
-     * @param prefix  The prefix to match.
-     * @return  The list of words matching the prefix.
+     * @param prefix The prefix to match.
+     * @return The list of words matching the prefix.
      */
+    private boolean isInvalidPrefix(String prefix){
+        return prefix == null || prefix.trim().isEmpty() || wordservice.getInvalidCharacter().contains(prefix.charAt(0));
+    }
     public Collection<String> wordsMatchingPrefix(String prefix) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+        if(isInvalidPrefix(prefix)){
+            return new ArrayList<>();
+        }
+        String cleanedPrefix = prefix.trim().toLowerCase();
+
+        List<String> matchingWords = new ArrayList<>();
+
+        for (String words : wordservice.getWordList()){
+            if (words.toLowerCase().trim().startsWith(prefix.toLowerCase().trim())){
+                matchingWords.add(words);
+            }
+        }
+        return matchingWords;
+
     }
 
     /**
@@ -139,13 +178,34 @@ public class JumbleEngine {
      * @param length     The length of the word to match.
      * @return  The list of words matching the searching criteria.
      */
-    public Collection<String> searchWords(Character startChar, Character endChar, Integer length) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+    public Collection<String> searchWords(Character startChar, Character endChar, Integer length) throws IOException {
+        List<String> matchingWords = new ArrayList<>();
+
+        if (startChar != null) startChar = Character.toLowerCase(startChar);
+        if (endChar != null) endChar = Character.toLowerCase(endChar);
+
+        if ((startChar != null && wordservice.getInvalidCharacter().contains(startChar)) ||
+                (endChar != null && wordservice.getInvalidCharacter().contains(endChar))) {
+            return new ArrayList<>();
+        }
+
+        List<String> wordList = wordservice.getWordList();
+
+        for (String words : wordList) {
+            if (length != null && words.length() != length) {
+                continue;
+            }
+            if (startChar != null && startChar != words.charAt(0)) {
+                continue;
+            }
+            if (endChar != null && endChar != words.charAt(words.length() - 1)) {
+                continue;
+            }
+            matchingWords.add(words);
+        }
+        return matchingWords;
     }
+
 
     /**
      * Generates all possible combinations of smaller/sub words using the
@@ -170,13 +230,34 @@ public class JumbleEngine {
      *                   Default is 3.
      * @return  The list of sub words constructed from input `word`.
      */
-    public Collection<String> generateSubWords(String word, Integer minLength) {
-        /*
-         * Refer to the method's Javadoc (above) and implement accordingly.
-         * Must pass the corresponding unit tests.
-         */
-        throw new UnsupportedOperationException("to be implemented");
+
+    private void generateSubWordsHelper(String remaining, Integer minLength, String current, Set<String> result) {
+        if (current.length() >= (minLength != null ? minLength : 3)
+                && wordservice.isValidWord(current)
+                && !current.equalsIgnoreCase(remaining)) {
+            result.add(current);
+        }
+
+        for (int i = 0; i < remaining.length(); i++) {
+            String newRemaining = remaining.substring(0, i) + remaining.substring(i + 1);
+            generateSubWordsHelper(newRemaining, minLength, current + remaining.charAt(i), result);
+        }
     }
+    public Collection<String> generateSubWords(String word, Integer minLength) {
+
+        Set<String> subWords = new HashSet<>();
+        if (word == null || (minLength != null && minLength <= 0)) {
+            return subWords;
+        }
+
+        word = word.trim();
+        generateSubWordsHelper(word, minLength, "", subWords);
+
+        subWords.remove(word);
+
+        return subWords;
+    }
+
 
     /**
      * Creates a game state with word to guess, scrambled letters, and
