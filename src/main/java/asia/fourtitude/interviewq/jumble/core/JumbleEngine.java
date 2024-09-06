@@ -29,7 +29,7 @@ public class JumbleEngine {
      */
     public String scramble(String word) {
 
-        if(word.length()<2 || word == null){
+        if(word == null || word.length()<2){
             return word;
         }
 

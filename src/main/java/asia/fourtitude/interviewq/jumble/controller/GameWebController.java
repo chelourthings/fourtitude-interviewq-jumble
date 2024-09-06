@@ -17,6 +17,9 @@ import asia.fourtitude.interviewq.jumble.core.GameState;
 import asia.fourtitude.interviewq.jumble.core.JumbleEngine;
 import asia.fourtitude.interviewq.jumble.model.GameBoard;
 
+import java.io.*;
+import java.util.Collection;
+
 @Controller
 @RequestMapping(path = "/game")
 @SessionAttributes("board")
@@ -75,6 +78,7 @@ public class GameWebController {
          * c) Must pass the corresponding unit tests
          */
 
+        board.setState(state);
         return "game/board";
     }
 
@@ -88,7 +92,7 @@ public class GameWebController {
     @PostMapping("/play")
     public String doPostPlay(
             @ModelAttribute(name = "board") GameBoard board,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model) throws IOException {
         if (board == null || board.getState() == null) {
             // session expired
             return "game/board";
@@ -106,7 +110,28 @@ public class GameWebController {
          * f) Must pass the corresponding unit tests
          */
 
+        String guess = "";
+        String cleanedGuess = cleanGuess(guess);
+        if (isGuessInvalid(cleanedGuess, board)) {
+            bindingResult.rejectValue("word", "word.incorrect", "Guessed incorrectly.");
+        } else {
+            updateGameBoard(board, cleanedGuess);
+        }
         return "game/board";
     }
+
+
+    private String cleanGuess(String guess) {
+        return guess == null ? "" : guess.trim().toLowerCase();
+    }
+
+    private boolean isGuessInvalid(String cleanedGuess, GameBoard board) throws IOException {
+        Collection<String> validSubWords = jumbleEngine.generateSubWords(board.getState().getOriginal(), null);
+        return cleanedGuess.isEmpty() || !validSubWords.contains(cleanedGuess);
+    }
+    private void updateGameBoard(GameBoard board, String cleanedGuess) {
+        board.getState().updateGuessWord(cleanedGuess);
+    }
+
 
 }

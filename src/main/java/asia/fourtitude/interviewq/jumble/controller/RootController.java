@@ -2,6 +2,8 @@ package asia.fourtitude.interviewq.jumble.controller;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,15 @@ public class RootController {
     public String doPostScramble(
             @ModelAttribute(name = "form") ScrambleForm form,
             BindingResult bindingResult, Model model) {
+//
+//        //Validate form, handle error
+//        if (bindingResult.hasErrors()){
+//            return "scramble";
+//        }
+
+        //call engine,set result in form object
+        form.setScramble(jumbleEngine.scramble(form.getWord()));
+        return "scramble";
         /*
          * TODO:
          * a) Validate the input `form`
@@ -58,7 +69,6 @@ public class RootController {
          * d) Must pass the corresponding unit tests
          */
 
-        return "scramble";
     }
 
     @GetMapping("palindrome")
@@ -76,7 +86,7 @@ public class RootController {
     @PostMapping("exists")
     public String doPostExists(
             @ModelAttribute(name = "form") ExistsForm form,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model) throws IOException {
         /*
          * TODO:
          * a) Validate the input `form`
@@ -85,6 +95,7 @@ public class RootController {
          * d) Must pass the corresponding unit tests
          */
 
+        form.setExists(jumbleEngine.exists(form.getWord()));
         return "exists";
     }
 
@@ -106,6 +117,8 @@ public class RootController {
          * d) Must pass the corresponding unit tests
          */
 
+        form.setWords(jumbleEngine.wordsMatchingPrefix(form.getPrefix()));
+
         return "prefix";
     }
 
@@ -118,7 +131,7 @@ public class RootController {
     @PostMapping("search")
     public String doPostSearch(
             @ModelAttribute(name = "form") SearchForm form,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model) throws IOException {
         /*
          * TODO:
          * a) Validate the input `form`
@@ -127,6 +140,15 @@ public class RootController {
          * d) Presentation page to show the result
          * e) Must pass the corresponding unit tests
          */
+        if ((form.getStartChar() != null && form.getStartChar().isEmpty()) ||
+                (form.getEndChar() != null && form.getEndChar().isEmpty())){
+            return "search";
+        }
+
+        Character startChar = form.getStartChar() == null ? null : form.getStartChar().charAt(0);
+        Character endChar = form.getEndChar() == null ? null : form.getEndChar().charAt(0);
+        Integer length = form.getLength() == null ? null : form.getLength();
+        form.setWords(jumbleEngine.searchWords(startChar, endChar, length));
 
         return "search";
     }
@@ -140,7 +162,7 @@ public class RootController {
     @PostMapping("subWords")
     public String doPostSubWords(
             @ModelAttribute(name = "form") SubWordsForm form,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model) throws IOException {
         /*
          * TODO:
          * a) Validate the input `form`
@@ -148,6 +170,7 @@ public class RootController {
          * c) Presentation page to show the result
          * d) Must pass the corresponding unit tests
          */
+        form.setWords(jumbleEngine.generateSubWords(form.getWord(), form.getMinLength()));
 
         return "subWords";
     }
