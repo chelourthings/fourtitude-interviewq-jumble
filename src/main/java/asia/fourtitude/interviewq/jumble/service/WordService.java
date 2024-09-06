@@ -74,7 +74,7 @@ public class WordService {
         }
     }
 
-    private void populateInvalidCharacters(){
+    public void populateInvalidCharacters(){
         String invalidChars = ",./<>?;':\"[]{}\\|1234567890!@#$%^&*()`~";
         for( char w : invalidChars.toCharArray()){
             invalidCharacter.add(w);

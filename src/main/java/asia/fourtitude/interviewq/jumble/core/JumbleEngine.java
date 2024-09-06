@@ -2,7 +2,6 @@ package asia.fourtitude.interviewq.jumble.core;
 
 import asia.fourtitude.interviewq.jumble.service.WordService;
 import lombok.AllArgsConstructor;
-import org.codehaus.groovy.tools.shell.IO;
 
 import java.io.*;
 import java.util.*;
@@ -11,6 +10,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class JumbleEngine {
     private WordService wordservice;
+    private Set<Character> invalidCharacter = new HashSet<>();
     public JumbleEngine() throws IOException{
         this.wordservice = new WordService();
     }
@@ -28,18 +28,42 @@ public class JumbleEngine {
      * @return  The scrambled output/letters.
      */
     public String scramble(String word) {
-        char[] characters = word.toCharArray();
 
-        //shuffle the array
-        for (int i = characters.length -1; i>0; i--){
-            int j = (int) (Math.random() * (i+1));
-
-            char temp = characters[i];
-            characters[i]=characters[j];
-            characters[j] = temp;
+        if(word.length()<2 || word == null){
+            return word;
         }
-        return new String(characters);
+
+        List<Character> characters = new ArrayList<>();
+
+        for (char w : word.toCharArray()) {
+            characters.add(w);
+        }
+
+        String scrambled;
+        do{
+        Collections.shuffle(characters);
+        StringBuilder sb = new StringBuilder(characters.size());
+        for (char w : characters) {
+            sb.append(w);
+        }
+        scrambled = sb.toString();
+        }while(scrambled.equals(word));
+
+      return scrambled;
     }
+
+//        char[] characters = word.toCharArray();
+//
+//        //shuffle the array
+//        for (int i = characters.length -1; i>0; i--){
+//            int j = (int) (Math.random() * (i+1));
+//
+//            char temp = characters[i];
+//            characters[i]=characters[j];
+//            characters[j] = temp;
+//        }
+//        return new String(characters);
+
 
     /**
      * Retrieves the palindrome words from the internal
@@ -181,30 +205,31 @@ public class JumbleEngine {
      * @return  The list of words matching the searching criteria.
      */
     public Collection<String> searchWords(Character startChar, Character endChar, Integer length) throws IOException {
-        List<String> matchingWords = new ArrayList<>();
-
-        if (startChar != null) startChar = Character.toLowerCase(startChar);
-        if (endChar != null) endChar = Character.toLowerCase(endChar);
-
-        if ((startChar != null && wordservice.getInvalidCharacter().contains(startChar)) ||
-                (endChar != null && wordservice.getInvalidCharacter().contains(endChar))) {
+        wordservice.populateInvalidCharacters();
+        
+        if (startChar == null && endChar == null && length == null) {
             return new ArrayList<>();
         }
 
-        List<String> wordList = wordservice.getWordList();
+        List<String> matchingWords = new ArrayList<>();
 
-        for (String words : wordList) {
-            if (length != null && words.length() != length) {
-                continue;
+        for (String word : wordservice.getWordList()) {
+            String cleanedWord = word.toLowerCase().trim();
+
+            boolean matchesStart = (startChar == null || !invalidCharacter.contains(startChar) &&
+                            cleanedWord.startsWith(startChar.toString().toLowerCase()));
+
+            boolean matchesEnd = (endChar == null || !invalidCharacter.contains(endChar) &&
+                            cleanedWord.endsWith(endChar.toString().toLowerCase()));
+
+            boolean matchesLength = (length == null || length > 0 &&
+                            cleanedWord.length() == length);
+
+            if (matchesStart && matchesEnd && matchesLength) {
+                matchingWords.add(word);
             }
-            if (startChar != null && startChar != words.charAt(0)) {
-                continue;
-            }
-            if (endChar != null && endChar != words.charAt(words.length() - 1)) {
-                continue;
-            }
-            matchingWords.add(words);
         }
+
         return matchingWords;
     }
 
